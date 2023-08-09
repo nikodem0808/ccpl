@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "concat.h": "c",
+        "lexer.h": "c",
+        "unidef.h": "c"
+    }
+}
