@@ -11,6 +11,8 @@ int is_digit(char ch);
 
 int isid(char ch);
 
+char* str_capture(const char* str, index_t i, index_t j);
+
 char_vector_t* read_file(const char* file_name);
 
 void lpstr_destructor(lpstr* ptr);

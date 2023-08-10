@@ -15,6 +15,14 @@ int isid(char ch)
     return isid0(ch) || is_digit(ch);
 }
 
+char* str_capture(const char* str, index_t i, index_t j)
+{
+    char* ptr = malloc(sizeof(char) * (j - i + 1));
+    strncpy(ptr, str + i, j - i);
+    ptr[j - i] = 0;
+    return ptr;
+}
+
 char_vector_t* read_file(const char* file_name)
 {
 	char_vector_t* file_content = new_char_vector_hijack(malloc(sizeof(char) * 128), 0, 128);

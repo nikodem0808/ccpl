@@ -6,13 +6,19 @@ extern char special_character[] = {
     '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?'
 };
 
-token_t_vector_t* call_lexer(const char* file_name)
+/*
+| Lexed tokens:
+| - preprocessor directives
+| - special charaters
+| - identifiers (at this stage, words)
+*/
+token_t_vector_t* call_lexer(char_vector_t* file_content)
 {
     token_t_vector_t* tokenvec = new_token_t_vector_hijack(malloc(sizeof(token_t) * 128), 0, 128);
-    char_vector_t* file_content = read_file(file_name);
+    token_t token = { 0 };
     const char* flstr = file_content->dat_ptr;
     index_t strsize = char_vector_size(file_content);
-    token_type_t current_token_type = token_NA;
+    token_type_t current_token_type = token_NA; // maybe unused
     for (index_t i = 0; i < strsize; i++)
     {
         if (isspace(flstr[i])) continue;
@@ -29,6 +35,10 @@ token_t_vector_t* call_lexer(const char* file_name)
                 j++;
                 if (j == strsize) break;
             }
+            token.type = token_preprocessor_directive;
+            token.subtype = token_preprocessor_directive;
+            token.val = str_capture(flstr, i, j);
+            i = j;
         }
         if (isid0(flstr[i]))
         {
