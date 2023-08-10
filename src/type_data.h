@@ -5,7 +5,7 @@
 #include "unidef.h"
 #include "utils.h"
 
-extern const index_t n_primitive_types = 12;
+extern const index_t n_primitive_types;
 extern type_data_t primitive_types[];
 
 extern type_data_t_vector_t* struct_types;

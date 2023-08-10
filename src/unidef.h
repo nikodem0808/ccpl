@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <math.h>
 #include <time.h>
-#include <util.h>
 #include <ctype.h>
 
 #ifndef UNIDEF_H
@@ -45,7 +44,9 @@ static inline const char* keywords_g[] = {
 typedef enum _token_type_base
 {
 	token_NA = 0,
-	token_literal,
+	token_numeric_oct_literal,
+	token_numeric_hex_literal,
+	token_numeric_dig_literal,
 	token_int8_literal,
 	token_int16_literal,
 	token_int32_literal,

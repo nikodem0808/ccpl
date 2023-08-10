@@ -189,7 +189,8 @@ index_t find_typedefed_type_data(const char* name)
 int get_type_data(const char* name, type_data_t* data)
 {
     index_t index = -1;
-    index = strstr(name);
+    index = strstr(name, 0);
+    // TODO parse type kind, then rest of data
     //
     index = find_primitive_type_data(name);
     if (index != -1)

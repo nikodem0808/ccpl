@@ -1,8 +1,22 @@
 #include "utils.h"
 
+extern index_t n_special_characters = 28;
+extern char special_characters[] = {
+    '~', '!', '#', '%', '^', '&', '*', '(', ')', '-', '=', '+', '[', ']', '{', '}',
+    '\\', '|', ';', ':', '\'', '"', ',', '.', '<', '>', '/', '?'
+};
+
+//TODO: maybe implement is_special_char as lookup
+char _special_char_lookup[sizeof(char)];
+
+int isletter(char ch)
+{
+    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+}
+
 int isid0(char ch)
 {
-    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch == '_');
+    return isletter(ch) || (ch == '_');
 }
 
 int is_digit(char ch)
@@ -13,6 +27,25 @@ int is_digit(char ch)
 int isid(char ch)
 {
     return isid0(ch) || is_digit(ch);
+}
+
+int ishexletter(char ch)
+{
+    return (ch >= 'A' && ch <= 'F') && (ch >= 'a' && ch <= 'f');
+}
+
+int ishex(char ch)
+{
+    return ishexletter(ch) || isdigit(ch);
+}
+
+int is_special_char(char ch)
+{
+    for (index_t i = 0; i < n_special_characters; i++)
+    {
+        if (special_characters[i] == ch) return 1;
+    }
+    return 0;
 }
 
 char* str_capture(const char* str, index_t i, index_t j)
@@ -57,6 +90,31 @@ void type_data_t_destructor(type_data_t* ptr)
     free(ptr->immediate_name);
     free(ptr->real_name);
     if (ptr->kind != TK_ARRAY) free(ptr->param);
+}
+
+void get_line_column(const char* file_content, index_t position, index_t* lpline, index_t* lpcolumn)
+{
+    index_t n_nl = 0;
+    index_t last_nl = 0;
+    index_t i = 0;
+    while (i < position)
+    {
+        if (file_content[i] == '\n')
+        {
+            n_nl++;
+            last_nl = i;
+        }
+        i++;
+    }
+    (*lpline) = (n_nl + 1);
+    (*lpcolumn) = (position - last_nl);
+}
+
+void crash_with_error(const char* error_message)
+{
+    if (error_message != 0) printf(error_message);
+    else printf("Encountered fatal error, further information unavailable.\n");
+    exit(0xDEADBEEF);
 }
 
 

@@ -1,10 +1,10 @@
 #include "unidef.h"
+#include "type_data.h"
 #include "utils.h"
 
-extern index_t n_special_characters;
-extern char special_character[];
 
-token_t_vector_t* call_lexer(const char* file_name);
+
+token_t_vector_t* call_lexer(char_vector_t* file_content);
 
 index_t find_keyword(const char* str);
 
