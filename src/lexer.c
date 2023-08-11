@@ -8,7 +8,7 @@
 | Lexed tokens:
 | - preprocessor directives
 | - special charaters
-| - numeric literals
+| - numeric literals (including char, wchar_t and const char[])
 | - identifiers (at this stage, all alphanumeric sequences)
 */
 token_t_vector_t* call_lexer(char_vector_t* file_content)
@@ -17,23 +17,13 @@ token_t_vector_t* call_lexer(char_vector_t* file_content)
     token_t token = { 0 };
     const char* flstr = file_content->dat_ptr;
     index_t strsize = char_vector_size(file_content);
-    token_type_t current_token_type = token_NA; // maybe unused
     for (index_t i = 0; i < strsize;)
     {
         if (isspace(flstr[i])) continue;
-        if (is_special_char(flstr[i]))
-        {
-            memset(&token, 0, sizeof(token));
-            token.type = token_preprocessor_directive;
-            token.subtype = token_preprocessor_directive;
-            token.val = flstr[i];
-            token_t_vector_push_back_ref(tokenvec, &token);
-            i++;
-        }
         if (flstr[i] == '#')
         {
             index_t j = i;
-            while (flstr[j] != '\n')
+            while (flstr[j] != '\n' && flstr[j] != 0)
             {
                 if (flstr[j] == '\\')
                 {
@@ -51,9 +41,32 @@ token_t_vector_t* call_lexer(char_vector_t* file_content)
             i = j;
             continue;
         }
+        if (is_special_char(flstr[i]))
+        {
+            memset(&token, 0, sizeof(token));
+            token.type = token_special_character;
+            token.subtype = token_special_character;
+            token.val = flstr[i];
+            token_t_vector_push_back_ref(tokenvec, &token);
+            i++;
+            continue;
+        }
         if (isid0(flstr[i]))
         {
+            // if L, check if parsing a literal
             index_t j = i;
+            if (flstr[i] == 'L' && flstr[i + 1] != 0)
+            {
+                if (flstr[i] == '\'')
+                {
+                    index_t j = i + 1;
+                    while (flstr[j] != /**/)
+                    {
+                        ;
+                    }
+                    continue;
+                }
+            }
             while (isid(flstr[j]))
             {
                 j++;
