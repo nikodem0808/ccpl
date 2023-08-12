@@ -9,6 +9,9 @@
 #ifndef UNIDEF_H
 #define UNIDEF_H
 
+typedef wchar_t wchar;
+typedef wchar* lpwcs;
+
 typedef uint64_t index_t;
 #define INDEX_T_NOT_FOUND (-1)
 
@@ -39,6 +42,35 @@ static inline const char* keywords_g[] = {
     "union",
     "volatile",
     "while"
+};
+
+static inline index_t n_wkeywords = 25;
+static inline const wchar* wkeywords_g[] = {
+    L"auto",
+    L"break",
+    L"case",
+    L"const",
+    L"continue",
+    L"default",
+    L"do",
+    L"else",
+    L"enum",
+    L"extern",
+    L"for",
+    L"goto",
+    L"if",
+    L"inline",
+    L"register",
+    L"restrict",
+    L"return",
+    L"sizeof",
+    L"static",
+    L"struct",
+    L"switch",
+    L"typedef",
+    L"union",
+    L"volatile",
+    L"while"
 };
 
 typedef enum _token_type_base
@@ -124,6 +156,12 @@ typedef char* lpstr;
 #include "vector.h"
 
 #define T char
+#include "vector.h"
+
+#define T wchar
+#include "vector.h"
+
+#define T lpwcs
 #include "vector.h"
 
 #define T type_data_t

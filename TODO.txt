@@ -1,6 +1,8 @@
 NOW:
 1 -> Do the lexer:
     1) tokenize <- YOU'RE HERE (@ "lexer.c")
+        a) Numeric tokens marked as U, L, LL, UL and ULL are currently not parsed correctly
+        b) Tokens should be evaluated wherever possible
     2) consolidate (convert unresolved tokens to resolved tokens)
 2 -> Add insertion/erasure to "vector.h"
 
@@ -9,4 +11,4 @@ LATER:
 2 -> Compile line-by-line to assembly
 3 -> Call nasm on each file
 4 -> Link all files with ld
-5 -> Attack file position to token for error formatting purposes
+5 -> Attach file position to token for error formatting purposes
