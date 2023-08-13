@@ -20,27 +20,6 @@ token_t_vector_t* wcall_lexer(wchar_vector_t* file_content)
     for (index_t i = 0; i < strsize;)
     {
         if (iswspace(flstr[i])) continue;
-        if (flstr[i] == L'#')
-        {
-            index_t j = i;
-            while (flstr[j] != L'\n' && flstr[j] != 0)
-            {
-                if (flstr[j] == L'\\')
-                {
-                    j++;
-                    if (j == strsize) break;
-                }
-                j++;
-                if (j == strsize) break;
-            }
-            memset(&token, 0, sizeof(token));
-            token.type = token_preprocessor_directive;
-            token.subtype = token_preprocessor_directive;
-            token.val = wcs_capture(flstr, i, j);
-            token_t_vector_push_back_ref(tokenvec, &token);
-            i = j;
-            continue;
-        }
         if (wis_special_char(flstr[i]))
         {
             memset(&token, 0, sizeof(token));
@@ -59,7 +38,24 @@ token_t_vector_t* wcall_lexer(wchar_vector_t* file_content)
             {
                 if (flstr[i] == L'"')
                 {
-                    ;
+                    j++;
+                    while (flstr[j] != L'"')
+                    {
+                        if (flstr[j] == 0)
+                        {
+                            index_t line, column;
+                            wget_line_column(flstr, j, &line, &column);
+                            wchar buf[256] = { 0 };
+                            swprintf(buf, L"Expected '\"' @ line %d, column %d", line, column);
+                            wcrash_with_error(buf);
+                        }
+                        if (flstr[j] == L'\\')
+                        {
+                            j++;
+                            // Resolve escaped character
+                        }
+                        j++;
+                    }
                 }
                 if (flstr[i] == L'\'')
                 {

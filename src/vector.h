@@ -310,3 +310,31 @@ static void c2(T,_vector_pop_n_obj) (vector_t *vec, index_t n, c3(_,T,_destructo
 	}
 }
 
+static void c2(T,_vector_hijack) (vector_t *vec, T *elem_ptr, index_t end, index_t cap)
+{
+	free(vec->dat_ptr);
+	vec->dat_ptr = elem_ptr;
+	vec->dat_ptr = elem_ptr + end;
+	vec->dat_ptr = elem_ptr + cap;
+}
+
+static T * c2(T,_vector_release) (vector_t *vec)
+{
+	T * elem_ptr = vec->dat_ptr;
+	vec->dat_ptr = malloc(sizeof(T));
+	vec->end_ptr = vec->dat_ptr;
+	vec->end_ptr = vec->dat_ptr + 1;
+	return elem_ptr;
+}
+
+static T * c2(T,_vector_release_s) (vector_t *vec, index_t* end_ptr, index_t* cap_ptr)
+{
+	if (end_ptr != 0) (*end_ptr) = vec->end_ptr - vec->dat_ptr;
+	if (cap_ptr != 0) (*cap_ptr) = vec->cap_ptr - vec->dat_ptr;
+	T * elem_ptr = vec->dat_ptr;
+	vec->dat_ptr = malloc(sizeof(T));
+	vec->end_ptr = vec->dat_ptr;
+	vec->end_ptr = vec->dat_ptr + 1;
+	return elem_ptr;
+}
+

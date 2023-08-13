@@ -3,6 +3,7 @@ NOW:
     1) tokenize <- YOU'RE HERE (@ "lexer.c")
         a) Numeric tokens marked as U, L, LL, UL and ULL are currently not parsed correctly
         b) Tokens should be evaluated wherever possible
+        c) Preprocessor definitions resolved by a call to the preprocessor before
     2) consolidate (convert unresolved tokens to resolved tokens)
 2 -> Add insertion/erasure to "vector.h"
 
