@@ -46,7 +46,7 @@ token_t_vector_t* wcall_lexer(wchar_vector_t* file_content)
                             index_t line, column;
                             wget_line_column(flstr, j, &line, &column);
                             wchar buf[256] = { 0 };
-                            swprintf(buf, L"Expected '\"' @ line %d, column %d", line, column);
+                            swprintf(buf, L"Expected \" @ line %d, column %d", line, column);
                             wcrash_with_error(buf);
                         }
                         if (flstr[j] == L'\\')
@@ -62,7 +62,20 @@ token_t_vector_t* wcall_lexer(wchar_vector_t* file_content)
                     index_t j = i + 1;
                     while (flstr[j] != L'\'')
                     {
-                        ;
+                        if (flstr[j] == 0)
+                        {
+                            index_t line, column;
+                            wget_line_column(flstr, j, &line, &column);
+                            wchar buf[256] = { 0 };
+                            swprintf(buf, L"Expected \" @ line %d, column %d", line, column);
+                            wcrash_with_error(buf);
+                        }
+                        if (flstr[j] == L'\\')
+                        {
+                            j++;
+                            // Resolve escaped character
+                        }
+                        j++;
                     }
                     continue;
                 }
@@ -74,7 +87,7 @@ token_t_vector_t* wcall_lexer(wchar_vector_t* file_content)
             memset(&token, 0, sizeof(token));
             token.type = token_identifier;
             token.subtype = token_identifier;
-            token.val = str_capture(flstr, i, j);
+            token.val = wcs_capture(flstr, i, j);
             token_t_vector_push_back_ref(tokenvec, &token);
             i = j;
             continue;
@@ -88,10 +101,11 @@ token_t_vector_t* wcall_lexer(wchar_vector_t* file_content)
                 if (j == strsize || iswspace(flstr[j]))
                 {
                     token.type = token_numeric_dig_literal;
-                    token.subtype = token_int32_literal; // !!!
+                    token.subtype = token_int32_literal;
                     token.type_data = primitive_types[find_primitive_type_data("int")];
                     token.eval = 0;
-                    break;
+                    i = j;
+                    continue;
                 }
                 else if (flstr[j] == L'x' || flstr[j] == L'X')
                 {
@@ -108,17 +122,13 @@ token_t_vector_t* wcall_lexer(wchar_vector_t* file_content)
                     {
                         j++;
                     } while (wishex(flstr[j]));
-                    wcstol(flstr + i, flstr + j, 0x10);
                     token.type = token_numeric_hex_literal;
-                    token.subtype = token_int32_literal; // !!!
-                    token.type_data = primitive_types[find_primitive_type_data("int")];
-                    token.eval = 0;
+                    token.eval = wcstol(flstr + i, flstr + j, 0x10);
                     i = j;
-                    continue;
                 }
                 else if (flstr[j] == 'b' || flstr[j] == 'B')
                 {
-                    if (!wishex(flstr[j + 1]))
+                    if (!wis01(flstr[j + 1]))
                     {
                         index_t line, column;
                         wget_line_column(flstr, j, &line, &column);
@@ -130,27 +140,84 @@ token_t_vector_t* wcall_lexer(wchar_vector_t* file_content)
                     do
                     {
                         j++;
-                    } while (wishex(flstr[j]));
-                    wcstol(flstr + i, flstr + j, 0b10);
-                    token.type = token_numeric_hex_literal;
-                    token.subtype = token_int32_literal; // !!!
-                    token.type_data = primitive_types[find_primitive_type_data("int")];
-                    token.eval = 0;
+                    } while (wis01(flstr[j]));
+                    token.type = token_numeric_bin_literal;
+                    token.eval = wcstol(flstr + i, flstr + j, 0b10);
                     i = j;
-                    continue;
                 }
                 else
                 {
-                    ;
+                    if (!wisoct(flstr[j + 1]))
+                    {
+                        index_t line, column;
+                        wget_line_column(flstr, j, &line, &column);
+                        wchar buf[256] = { 0 };
+                        swprintf(buf, "Invalid octal integer literal @ line %d, column %d", line, column);
+                        wcrash_with_error(buf);
+                    }
+                    j++;
+                    do
+                    {
+                        j++;
+                    } while (wisoct(flstr[j]));
+                    token.type = token_numeric_bin_literal;
+                    token.eval = wcstol(flstr + i, flstr + j, 010);
+                    i = j;
                 }
             }
             else
             {
-                ;
+                while (wis_digit(flstr[j]))
+                {
+                    j++;
+                }
+                token.type = token_numeric_dig_literal;
+                token.eval = wcstol(flstr + i, flstr + j, 10);
+                i = j;
             }
-            token.type = token_preprocessor_directive;
-            token.subtype = token_preprocessor_directive;
-            token.val = wcs_capture(flstr, i, j);
+            if ((strsize - j) <= 3 && wcsnicmp(flstr + j, L"ULL", 3) == 0)
+            {
+                token.subtype = token_uint64_literal;
+                token.type_data = primitive_types[find_primitive_type_data("unsigned long long")];
+                j += 3;
+            }
+            else if ((strsize - j) <= 2 && wcsnicmp(flstr + j, L"UL", 2) == 0)
+            {
+                token.subtype = token_uint32_literal;
+                token.type_data = primitive_types[find_primitive_type_data("unsigned long")];
+                j += 2;
+            }
+            else if ((strsize - j) <= 2 && wcsnicmp(flstr + j, L"LL", 2) == 0)
+            {
+                token.subtype = token_int64_literal;
+                token.type_data = primitive_types[find_primitive_type_data("long long")];
+                j += 2;
+            }
+            else if ((strsize - j) <= 1 && wcsnicmp(flstr + j, L"U", 1) == 0)
+            {
+                token.subtype = token_uint32_literal;
+                token.type_data = primitive_types[find_primitive_type_data("unsigned int")];
+                j += 1;
+            }
+            else if ((strsize - j) <= 1 && wcsnicmp(flstr + j, L"L", 1) == 0)
+            {
+                token.subtype = token_int32_literal;
+                token.type_data = primitive_types[find_primitive_type_data("long")];
+                j += 1;
+            }
+            else
+            {
+                token.subtype = token_int32_literal;
+                token.type_data = primitive_types[find_primitive_type_data("int")];
+            }
+            if (wisid(flstr[j]))
+            {
+                index_t line, column;
+                wget_line_column(flstr, j, &line, &column);
+                wchar buf[256] = { 0 };
+                swprintf(buf, "Expected end of numeric literal @ line %d, column %d", line, column);
+                wcrash_with_error(buf);
+            }
             token_t_vector_push_back_ref(tokenvec, &token);
             i = j;
             continue;

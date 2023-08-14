@@ -19,6 +19,10 @@ int ishex(char ch);
 
 int is_special_char(char ch);
 
+int is01(char ch);
+
+int isoct(char ch);
+
 int wisletter(wchar ch);
 
 int wisid0(wchar ch);
@@ -32,6 +36,10 @@ int wishexletter(wchar ch);
 int wishex(wchar ch);
 
 int wis_special_char(wchar ch);
+
+int wis01(wchar ch);
+
+int wisoct(wchar ch);
 
 char* str_capture(const char* str, index_t i, index_t j);
 

@@ -5,99 +5,99 @@ extern const index_t n_primitive_types = 12;
 extern type_data_t primitive_types[] = {
     {
         .byte_size = 1,
-        .full_name = "char",
-        .immediate_name = "char",
+        .full_name = L"char",
+        .immediate_name = L"char",
         .next = 0,
         .param = 0,
-        .real_name = "char"
+        .real_name = L"char"
     },
     {
         .byte_size = 2,
-        .full_name = "short",
-        .immediate_name = "short",
+        .full_name = L"short",
+        .immediate_name = L"short",
         .next = 0,
         .param = 0,
-        .real_name = "short"
+        .real_name = L"short"
     },
     {
         .byte_size = 4,
-        .full_name = "int",
-        .immediate_name = "int",
+        .full_name = L"int",
+        .immediate_name = L"int",
         .next = 0,
         .param = 0,
-        .real_name = "int"
+        .real_name = L"int"
     },
     {
         .byte_size = 4,
-        .full_name = "long",
-        .immediate_name = "long",
+        .full_name = L"long",
+        .immediate_name = L"long",
         .next = 0,
         .param = 0,
-        .real_name = "long"
+        .real_name = L"long"
     },
     {
         .byte_size = 8,
-        .full_name = "long long",
-        .immediate_name = "long long",
+        .full_name = L"long long",
+        .immediate_name = L"long long",
         .next = 0,
         .param = 0,
-        .real_name = "long long"
+        .real_name = L"long long"
     },
     {
         .byte_size = 1,
-        .full_name = "unsigned char",
-        .immediate_name = "unsigned char",
+        .full_name = L"unsigned char",
+        .immediate_name = L"unsigned char",
         .next = 0,
         .param = 0,
-        .real_name = "unsigned char"
+        .real_name = L"unsigned char"
     },
     {
         .byte_size = 2,
-        .full_name = "unsigned short",
-        .immediate_name = "unsigned short",
+        .full_name = L"unsigned short",
+        .immediate_name = L"unsigned short",
         .next = 0,
         .param = 0,
-        .real_name = "unsigned short"
+        .real_name = L"unsigned short"
     },
     {
         .byte_size = 4,
-        .full_name = "unsigned int",
-        .immediate_name = "unsigned int",
+        .full_name = L"unsigned int",
+        .immediate_name = L"unsigned int",
         .next = 0,
         .param = 0,
-        .real_name = "unsigned int"
+        .real_name = L"unsigned int"
     },
     {
         .byte_size = 4,
-        .full_name = "unsigned long",
-        .immediate_name = "unsigned long",
+        .full_name = L"unsigned long",
+        .immediate_name = L"unsigned long",
         .next = 0,
         .param = 0,
-        .real_name = "unsigned long"
+        .real_name = L"unsigned long"
     },
     {
         .byte_size = 8,
-        .full_name = "unsigned long long",
-        .immediate_name = "unsigned long long",
+        .full_name = L"unsigned long long",
+        .immediate_name = L"unsigned long long",
         .next = 0,
         .param = 0,
-        .real_name = "unsigned long long"
+        .real_name = L"unsigned long long"
     },
     {
         .byte_size = 4,
-        .full_name = "float",
-        .immediate_name = "float",
+        .full_name = L"float",
+        .immediate_name = L"float",
         .next = 0,
         .param = 0,
-        .real_name = "float"
+        .real_name = L"float"
     },
     {
         .byte_size = 8,
-        .full_name = "double",
-        .immediate_name = "double",
+        .full_name = L"double",
+        .immediate_name = L"double",
         .next = 0,
         .param = 0,
-        .real_name = "double"
+        .real_name = L"double"
     }
 };
 

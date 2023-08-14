@@ -79,6 +79,7 @@ typedef enum _token_type_base
 	token_numeric_oct_literal,
 	token_numeric_hex_literal,
 	token_numeric_dig_literal,
+    token_numeric_bin_literal,
 	token_int8_literal,
 	token_int16_literal,
 	token_int32_literal,

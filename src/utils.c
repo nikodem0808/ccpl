@@ -55,6 +55,16 @@ int is_special_char(char ch)
     return 0;
 }
 
+int is01(char ch)
+{
+    return ch == '0' || ch == '1';
+}
+
+int isoct(char ch)
+{
+    return (ch >= '0') && (ch <= '8');
+}
+
 int wisletter(wchar ch)
 {
     return (ch >= L'A' && ch <= L'Z') || (ch >= L'a' && ch <= L'z');
@@ -92,6 +102,16 @@ int wis_special_char(wchar ch)
         if (special_wcharacters[i] == ch) return 1;
     }
     return 0;
+}
+
+int wis01(wchar ch)
+{
+    return (ch == L'0') || (ch == L'1');
+}
+
+int wisoct(wchar ch)
+{
+    return (ch >= L'0') && (ch <= L'8');
 }
 
 char* str_capture(const char* str, index_t i, index_t j)
