@@ -5,8 +5,8 @@
 
 
 /*
+!!! The file should be preprocessed before lexing
 | Lexed tokens:
-| - preprocessor directives
 | - special charaters
 | - numeric literals (including char, wchar_t and const char[])
 | - identifiers (at this stage, all alphanumeric sequences)

@@ -9,7 +9,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"char",
         .next = 0,
         .param = 0,
-        .real_name = L"char"
+        .real_name = L"char",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 2,
@@ -17,7 +18,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"short",
         .next = 0,
         .param = 0,
-        .real_name = L"short"
+        .real_name = L"short",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 4,
@@ -25,7 +27,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"int",
         .next = 0,
         .param = 0,
-        .real_name = L"int"
+        .real_name = L"int",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 4,
@@ -33,7 +36,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"long",
         .next = 0,
         .param = 0,
-        .real_name = L"long"
+        .real_name = L"long",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 8,
@@ -41,7 +45,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"long long",
         .next = 0,
         .param = 0,
-        .real_name = L"long long"
+        .real_name = L"long long",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 1,
@@ -49,7 +54,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"unsigned char",
         .next = 0,
         .param = 0,
-        .real_name = L"unsigned char"
+        .real_name = L"unsigned char",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 2,
@@ -57,7 +63,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"unsigned short",
         .next = 0,
         .param = 0,
-        .real_name = L"unsigned short"
+        .real_name = L"unsigned short",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 4,
@@ -65,7 +72,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"unsigned int",
         .next = 0,
         .param = 0,
-        .real_name = L"unsigned int"
+        .real_name = L"unsigned int",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 4,
@@ -73,7 +81,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"unsigned long",
         .next = 0,
         .param = 0,
-        .real_name = L"unsigned long"
+        .real_name = L"unsigned long",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 8,
@@ -81,7 +90,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"unsigned long long",
         .next = 0,
         .param = 0,
-        .real_name = L"unsigned long long"
+        .real_name = L"unsigned long long",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 4,
@@ -89,7 +99,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"float",
         .next = 0,
         .param = 0,
-        .real_name = L"float"
+        .real_name = L"float",
+        .kind = TK_PRIMITIVE
     },
     {
         .byte_size = 8,
@@ -97,7 +108,8 @@ extern type_data_t primitive_types[] = {
         .immediate_name = L"double",
         .next = 0,
         .param = 0,
-        .real_name = L"double"
+        .real_name = L"double",
+        .kind = TK_PRIMITIVE
     }
 };
 
