@@ -7,6 +7,9 @@
 extern index_t n_special_characters;
 extern char special_characters[];
 
+extern index_t n_special_wcharacters;
+extern wchar special_wcharacters[];
+
 int isid0(char ch);
 
 int is_digit(char ch);

@@ -338,3 +338,48 @@ static T * c2(T,_vector_release_s) (vector_t *vec, index_t* end_ptr, index_t* ca
 	return elem_ptr;
 }
 
+static void c2(T,_vector_insert) (vector_t *vec, index_t at, T elem)
+{
+	if (vec->end_ptr == vec->cap_ptr)
+	{
+		index_t cap = vec->cap_ptr - vec->dat_ptr;
+		index_t new_cap = 2 * cap;
+		T *new_dat_ptr = malloc(sizeof(T) * new_cap);
+		T *new_end_ptr = new_dat_ptr + cap + 1;
+		T *new_cap_ptr = new_dat_ptr + new_cap;
+		T *at_ptr = vec->dat_ptr + at;
+		T *ptr = vec->dat_ptr;
+		T *nptr = new_dat_ptr;
+		while (ptr != at_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		(*nptr) = elem;
+		nptr++;
+		while (ptr != vec->end_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		free(vec->dat_ptr);
+		vec->dat_ptr = new_dat_ptr;
+		vec->end_ptr = new_end_ptr;
+		vec->cap_ptr = new_cap_ptr;
+		return;
+	}
+	vec->end_ptr++;
+	T *ptr = vec->end_ptr;
+	T *at_ptr = vec->dat_ptr + at;
+	while (ptr != at_ptr)
+	{
+		(*ptr) = *(ptr - 1);
+	}
+	(*at_ptr) = elem;
+}
+
+// TODO: insert_n, insert_ref, insert_n_ref and erasers
+
+

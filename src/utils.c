@@ -92,7 +92,7 @@ int wishexletter(wchar ch)
 
 int wishex(wchar ch)
 {
-    return wishexletter(ch) || wisdigit(ch);
+    return wishexletter(ch) || wis_digit(ch);
 }
 
 int wis_special_char(wchar ch)
@@ -125,7 +125,7 @@ char* str_capture(const char* str, index_t i, index_t j)
 wchar* wcs_capture(const wchar* wstr, index_t i, index_t j)
 {
     wchar* ptr = malloc(sizeof(wchar) * (j - i + 1));
-    wcscpy(ptr, wstr + i, j - i);
+    wcsncpy(ptr, wstr + i, j - i);
     ptr[j - i] = 0;
     return ptr;
 }
@@ -148,7 +148,7 @@ char_vector_t* read_file(const char* file_name)
 
 wchar_vector_t* wread_file(const char* file_name)
 {
-	wchar_vector_t* wfile_content = new_char_vector_hijack(malloc(sizeof(wchar) * 128), 0, 128);
+	wchar_vector_t* wfile_content = new_wchar_vector_hijack(malloc(sizeof(wchar) * 128), 0, 128);
 	wchar buf[513] = { 0 };
 	size_t n_read = 0;
 	FILE* fl = fopen(file_name, "r");

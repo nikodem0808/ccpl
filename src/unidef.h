@@ -121,16 +121,16 @@ typedef struct _type_data_base
 {
 	size_t byte_size;
 	type_kind_t kind;
-	const char* full_name;
-	const char* real_name;
-	const char* immediate_name;
+	const wchar* full_name;
+	const wchar* real_name;
+	const wchar* immediate_name;
 	void* param;
 	type_data_t* next;
 } type_data_t;
 
 typedef struct _token_base
 {
-	char* val;
+	wchar* val;
 	token_type_t type;
 	token_type_t subtype;
 	void* eval;
@@ -139,7 +139,7 @@ typedef struct _token_base
 
 typedef struct _enum_value_base
 {
-	const char* name;
+	const wchar* name;
 	long long value;
 } enum_value_t;
 

@@ -135,14 +135,14 @@ void finalize_type_resolution(void)
     delete_type_data_t_vector_obj(enum_types, type_data_t_destructor);
     delete_type_data_t_vector_obj(union_types, type_data_t_destructor);
 
-    delete_type_data_t_vector_obj(enum_values, enum_value_t_destructor);
+    delete_enum_value_t_vector_obj(enum_values, enum_value_t_destructor);
 }
 
-index_t find_primitive_type_data(const char* name)
+index_t find_primitive_type_data(const wchar* name)
 {
     for (int i = 0; i < n_primitive_types; i++)
     {
-        if (strcmp(name, primitive_types[i].full_name) == 0)
+        if (wcscmp(name, primitive_types[i].full_name) == 0)
         {
             return i;
         }
@@ -150,11 +150,11 @@ index_t find_primitive_type_data(const char* name)
     return -1;
 }
 
-index_t find_struct_type_data(const char* name)
+index_t find_struct_type_data(const wchar* name)
 {
     for (int i = 0; i < type_data_t_vector_size(struct_types); i++)
     {
-        if (strcmp(name, struct_types->dat_ptr[i].full_name) == 0)
+        if (wcscmp(name, struct_types->dat_ptr[i].full_name) == 0)
         {
             return i;
         }
@@ -162,11 +162,11 @@ index_t find_struct_type_data(const char* name)
     return -1;
 }
 
-index_t find_enum_type_data(const char* name)
+index_t find_enum_type_data(const wchar* name)
 {
     for (int i = 0; i < type_data_t_vector_size(enum_types); i++)
     {
-        if (strcmp(name, enum_types->dat_ptr[i].full_name) == 0)
+        if (wcscmp(name, enum_types->dat_ptr[i].full_name) == 0)
         {
             return i;
         }
@@ -174,11 +174,11 @@ index_t find_enum_type_data(const char* name)
     return -1;
 }
 
-index_t find_union_type_data(const char* name)
+index_t find_union_type_data(const wchar* name)
 {
     for (int i = 0; i < type_data_t_vector_size(union_types); i++)
     {
-        if (strcmp(name, union_types->dat_ptr[i].full_name) == 0)
+        if (wcscmp(name, union_types->dat_ptr[i].full_name) == 0)
         {
             return i;
         }
@@ -186,11 +186,11 @@ index_t find_union_type_data(const char* name)
     return -1;
 }
 
-index_t find_typedefed_type_data(const char* name)
+index_t find_typedefed_type_data(const wchar* name)
 {
     for (int i = 0; i < type_data_t_vector_size(union_types); i++)
     {
-        if (strcmp(name, typedefed_types->dat_ptr[i].full_name) == 0)
+        if (wcscmp(name, typedefed_types->dat_ptr[i].full_name) == 0)
         {
             return i;
         }
@@ -198,11 +198,11 @@ index_t find_typedefed_type_data(const char* name)
     return -1;
 }
 
-int get_type_data(const char* name, type_data_t* data)
+int get_type_data(const wchar* name, type_data_t* data)
 {
     index_t index = -1;
-    index = strstr(name, 0);
-    // TODO parse type kind, then rest of data
+    index = wcsstr(name, 0);
+    // TODO parse type kind, then rest of data !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     //
     index = find_primitive_type_data(name);
     if (index != -1)
@@ -238,19 +238,19 @@ int get_type_data(const char* name, type_data_t* data)
     return TK_NA;
 }
 
-void insert_enum_def(const char* id, long long val)
+void insert_enum_def(const wchar* id, long long val)
 {
-    char* cid = malloc(strlen(id) + 1);
-    strcpy(cid, id);
+    wchar* cid = malloc(sizeof(wchar) * (wcslen(id) + 1));
+    wcscpy(cid, id);
     enum_value_t kv = { .name = cid, .value = val };
     enum_value_t_vector_push_back(enum_values, kv);
 }
 
-int resolve_enum_def(const char* id, long long* lpvalue)
+int resolve_enum_def(const wchar* id, long long* lpvalue)
 {
     for (enum_value_t* i = enum_values->dat_ptr; i < enum_values->end_ptr; i++)
     {
-        if (strcmp(i->name, id) == 0)
+        if (wcscmp(i->name, id) == 0)
         {
             (*lpvalue) = i->value;
             return 1;
