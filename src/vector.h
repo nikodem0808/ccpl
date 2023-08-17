@@ -116,22 +116,22 @@ static void c3(delete_,T,_vector_obj) (vector_t *ptr, c3(_,T,_destructor_vectord
 
 // member access
 
-static T c2(T,_vector_get_n) (vector_t *vec, index_t n)
+static T c2(T,_vector_get) (vector_t *vec, index_t n)
 {
 	return vec->dat_ptr[n];
 }
 
-static T* c2(T,_vector_get_ptr_n) (vector_t *vec, index_t n)
+static T* c2(T,_vector_get_ptr) (vector_t *vec, index_t n)
 {
 	return vec->dat_ptr + n;
 }
 
-static void c2(T,_vector_set_n) (vector_t *vec, index_t n, T val)
+static void c2(T,_vector_set) (vector_t *vec, index_t n, T val)
 {
 	vec->dat_ptr[n] = val;
 }
 
-static void c2(T,_vector_set_ptr_n) (vector_t *vec, index_t n, T *val_ptr)
+static void c2(T,_vector_set_ptr) (vector_t *vec, index_t n, T *val_ptr)
 {
 	memcpy(vec->dat_ptr, val_ptr, sizeof(T));
 }
@@ -380,6 +380,173 @@ static void c2(T,_vector_insert) (vector_t *vec, index_t at, T elem)
 	(*at_ptr) = elem;
 }
 
-// TODO: insert_n, insert_ref, insert_n_ref and erasers
+static void c2(T,_vector_insert_ref) (vector_t *vec, index_t at, T *elem_ptr)
+{
+	if (vec->end_ptr == vec->cap_ptr)
+	{
+		index_t cap = vec->cap_ptr - vec->dat_ptr;
+		index_t new_cap = 2 * cap;
+		T *new_dat_ptr = malloc(sizeof(T) * new_cap);
+		T *new_end_ptr = new_dat_ptr + cap + 1;
+		T *new_cap_ptr = new_dat_ptr + new_cap;
+		T *at_ptr = vec->dat_ptr + at;
+		T *ptr = vec->dat_ptr;
+		T *nptr = new_dat_ptr;
+		while (ptr != at_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		memcpy(nptr, elem_ptr, sizeof(T));
+		nptr++;
+		while (ptr != vec->end_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		free(vec->dat_ptr);
+		vec->dat_ptr = new_dat_ptr;
+		vec->end_ptr = new_end_ptr;
+		vec->cap_ptr = new_cap_ptr;
+		return;
+	}
+	vec->end_ptr++;
+	T *ptr = vec->end_ptr;
+	T *at_ptr = vec->dat_ptr + at;
+	while (ptr != at_ptr)
+	{
+		(*ptr) = *(ptr - 1);
+	}
+	memcpy(at_ptr, elem_ptr, sizeof(T));
+}
+
+static void c2(T,_vector_insert_n) (vector_t *vec, index_t at, T *elem_ptr, index_t n)
+{
+	index_t new_size = vec->end_ptr - vec->dat_ptr + n;
+	if (n > vec->cap_ptr - vec->end_ptr)
+	{
+		index_t cap = vec->cap_ptr - vec->dat_ptr;
+		index_t new_cap = 2 * cap;
+		while (new_cap < new_size)
+		{
+			new_cap *= 2;
+		}
+		T *new_dat_ptr = malloc(sizeof(T) * new_cap);
+		T *new_end_ptr = new_dat_ptr + cap + n;
+		T *new_cap_ptr = new_dat_ptr + new_cap;
+		T *at_ptr = vec->dat_ptr + at;
+		T *ptr = vec->dat_ptr;
+		T *nptr = new_dat_ptr;
+		while (ptr != at_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		memcpy(nptr, elem_ptr, n * sizeof(T));
+		nptr += n;
+		while (ptr != vec->end_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		free(vec->dat_ptr);
+		vec->dat_ptr = new_dat_ptr;
+		vec->end_ptr = new_end_ptr;
+		vec->cap_ptr = new_cap_ptr;
+		return;
+	}
+	vec->end_ptr += n;
+	T *ptr = vec->end_ptr;
+	T *at_ptr = vec->dat_ptr + at;
+	while (ptr != at_ptr)
+	{
+		(*ptr) = *(ptr - n);
+	}
+	memcpy(at_ptr, elem_ptr, n * sizeof(T));
+}
+
+static void c2(T,_vector_insert_n_ref) (vector_t *vec, index_t at, T **elem_ref_ptr, index_t n)
+{
+	index_t new_size = vec->end_ptr - vec->dat_ptr + n;
+	if (n > vec->cap_ptr - vec->end_ptr)
+	{
+		index_t cap = vec->cap_ptr - vec->dat_ptr;
+		index_t new_cap = 2 * cap;
+		while (new_cap < new_size)
+		{
+			new_cap *= 2;
+		}
+		T *new_dat_ptr = malloc(sizeof(T) * new_cap);
+		T *new_end_ptr = new_dat_ptr + cap + n;
+		T *new_cap_ptr = new_dat_ptr + new_cap;
+		T *at_ptr = vec->dat_ptr + at;
+		T *ptr = vec->dat_ptr;
+		T *nptr = new_dat_ptr;
+		while (ptr != at_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		for (int i = 0; i < n; i++)
+		{
+			memcpy(nptr, *elem_ref_ptr, sizeof(T));
+			elem_ref_ptr++;
+			nptr++;
+		}
+		while (ptr != vec->end_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		free(vec->dat_ptr);
+		vec->dat_ptr = new_dat_ptr;
+		vec->end_ptr = new_end_ptr;
+		vec->cap_ptr = new_cap_ptr;
+		return;
+	}
+	vec->end_ptr += n;
+	T *ptr = vec->end_ptr;
+	T *at_ptr = vec->dat_ptr + at;
+	while (ptr != at_ptr)
+	{
+		(*ptr) = *(ptr - n);
+	}
+	for (int i = 0; i < n; i++)
+	{
+		memcpy(at_ptr, *elem_ref_ptr, sizeof(T));
+		elem_ref_ptr++;
+		at_ptr++;
+	}
+}
+
+static void c2(T,_vector_erase) (vector_t *vec, index_t at)
+{
+	T *ptr = vec->dat_ptr + at;
+	vec->end_ptr--;
+	while (ptr != vec->end_ptr)
+	{
+		(*ptr) = *(ptr + 1);
+		ptr++;
+	}
+}
+
+static void c2(T,_vector_erase_n) (vector_t *vec, index_t at, index_t n)
+{
+	T *ptr = vec->dat_ptr + at;
+	vec->end_ptr -= n;
+	while (ptr != vec->end_ptr)
+	{
+		(*ptr) = *(ptr + n);
+		ptr++;
+	}
+}
+
+// TODO: object inserters / erasers
 
 
