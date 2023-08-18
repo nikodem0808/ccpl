@@ -39,7 +39,14 @@ typedef struct c3(_,T,_vector_base)
 
 #define vector_t c2(T,_vector_t)
 
+#define elem_constructor _expand_vectordef(c3(_,T,_constructor_vectordef))
+#define elem_move _expand_vectordef(c3(_,T,_move_vectordef))
+#define elem_copy _expand_vectordef(c3(_,T,_copy_vectordef))
+#define elem_destructor _expand_vectordef(c3(_,T,_destructor_vectordef))
+
 typedef void (* c3(_,T,_destructor_vectordef))(T *);
+typedef void (* c3(_,T,_copy_vectordef))(T * to, T * from);
+typedef void (* c3(_,T,_move_vectordef))(T * to, T * from);
 typedef void (* c3(_,T,_constructor_vectordef))(T *);
 
 // constructors
@@ -154,7 +161,7 @@ static void c2(T,_vector_clear) (vector_t *vec)
 	memset(vec, 0, sizeof(vector_t));
 }
 
-static void c2(T,_vector_clear_obj) (vector_t* vec, c3(_,T,_destructor_vectordef) destr)
+static void c2(T,_vector_clear_obj) (vector_t* vec, elem_destructor destr)
 {
 	while (vec->end_ptr != vec->dat_ptr)
 	{
@@ -547,6 +554,118 @@ static void c2(T,_vector_erase_n) (vector_t *vec, index_t at, index_t n)
 	}
 }
 
-// TODO: object inserters / erasers
+static void c2(T,_vector_emplace) (vector_t *vec, index_t at, elem_constructor constr)
+{
+	if (vec->end_ptr == vec->cap_ptr)
+	{
+		index_t cap = vec->cap_ptr - vec->dat_ptr;
+		index_t new_cap = 2 * cap;
+		T *new_dat_ptr = malloc(sizeof(T) * new_cap);
+		T *new_end_ptr = new_dat_ptr + cap + 1;
+		T *new_cap_ptr = new_dat_ptr + new_cap;
+		T *at_ptr = vec->dat_ptr + at;
+		T *ptr = vec->dat_ptr;
+		T *nptr = new_dat_ptr;
+		while (ptr != at_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		constr(nptr);
+		nptr++;
+		while (ptr != vec->end_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		free(vec->dat_ptr);
+		vec->dat_ptr = new_dat_ptr;
+		vec->end_ptr = new_end_ptr;
+		vec->cap_ptr = new_cap_ptr;
+		return;
+	}
+	vec->end_ptr++;
+	T *ptr = vec->end_ptr;
+	T *at_ptr = vec->dat_ptr + at;
+	while (ptr != at_ptr)
+	{
+		(*ptr) = *(ptr - 1);
+	}
+	constr(at_ptr);
+}
 
+static void c2(T,_vector_emplace_n) (vector_t *vec, index_t at, elem_constructor constr, index_t n)
+{
+	index_t new_size = vec->end_ptr - vec->dat_ptr + n;
+	if (n > vec->cap_ptr - vec->end_ptr)
+	{
+		index_t cap = vec->cap_ptr - vec->dat_ptr;
+		index_t new_cap = 2 * cap;
+		while (new_cap < new_size)
+		{
+			new_cap *= 2;
+		}
+		T *new_dat_ptr = malloc(sizeof(T) * new_cap);
+		T *new_end_ptr = new_dat_ptr + cap + n;
+		T *new_cap_ptr = new_dat_ptr + new_cap;
+		T *at_ptr = vec->dat_ptr + at;
+		T *ptr = vec->dat_ptr;
+		T *nptr = new_dat_ptr;
+		while (ptr != at_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		for (int i = 0; i < n; i++)
+		{
+			constr(nptr);
+			nptr++;
+		}
+		while (ptr != vec->end_ptr)
+		{
+			(*nptr) = (*ptr);
+			ptr++;
+			nptr++;
+		}
+		free(vec->dat_ptr);
+		vec->dat_ptr = new_dat_ptr;
+		vec->end_ptr = new_end_ptr;
+		vec->cap_ptr = new_cap_ptr;
+		return;
+	}
+	vec->end_ptr += n;
+	T *ptr = vec->end_ptr;
+	T *at_ptr = vec->dat_ptr + at;
+	while (ptr != at_ptr)
+	{
+		(*ptr) = *(ptr - n);
+	}
+	for (int i = 0; i < n; i++)
+	{
+		constr(at_ptr);
+		at_ptr++;
+	}
+}
+
+static void c2(T,_vector_erase_obj) (vector_t *vec, index_t at)
+{
+	T *ptr = vec->dat_ptr + at;
+	vec->end_ptr--;
+	while (ptr != vec->end_ptr)
+	{
+		(*ptr) = *(ptr + 1);
+		ptr++;
+	}
+}
+
+// TODO: object inserters / erasers, resizers, functions woth constructors / destructors
+// also, rewrite object functions to use move/copy functions
+
+#undef elem_constructor
+#undef elem_move
+#undef elem_copy
+#undef elem_destructor
 

@@ -10,7 +10,7 @@ int ic(int* a, int* b)
 
 int main(int argc, char** argv)
 {
-	if (argc > 3)
+	if (argc > 3) // wrong inequality for testing
 	{
 		printf("Too few arguments, need at least one input and one output file path.\n");
 		return 1;
