@@ -40,13 +40,17 @@ typedef struct c3(_,T,_vector_base)
 #define vector_t c2(T,_vector_t)
 
 #define elem_constructor _expand_vectordef(c3(_,T,_constructor_vectordef))
-#define elem_move _expand_vectordef(c3(_,T,_move_vectordef))
-#define elem_copy _expand_vectordef(c3(_,T,_copy_vectordef))
+#define elem_move_assign _expand_vectordef(c3(_,T,_move_a_vectordef))
+#define elem_copy_assign _expand_vectordef(c3(_,T,_copy_a_vectordef))
+#define elem_move_construct _expand_vectordef(c3(_,T,_move_c_vectordef))
+#define elem_copy_construct _expand_vectordef(c3(_,T,_copy_c_vectordef))
 #define elem_destructor _expand_vectordef(c3(_,T,_destructor_vectordef))
 
 typedef void (* c3(_,T,_destructor_vectordef))(T *);
-typedef void (* c3(_,T,_copy_vectordef))(T * to, T * from);
-typedef void (* c3(_,T,_move_vectordef))(T * to, T * from);
+typedef void (* c3(_,T,_copy_a_vectordef))(T * to, T * from);
+typedef void (* c3(_,T,_move_a_vectordef))(T * to, T * from);
+typedef void (* c3(_,T,_copy_c_vectordef))(T * to, T * from);
+typedef void (* c3(_,T,_move_c_vectordef))(T * to, T * from);
 typedef void (* c3(_,T,_constructor_vectordef))(T *);
 
 // constructors
@@ -554,6 +558,34 @@ static void c2(T,_vector_erase_n) (vector_t *vec, index_t at, index_t n)
 	}
 }
 
+static void c2(T,_vector_emplace_back) (vector_t *vec, elem_constructor construct_at)
+{
+	if (vec->end_ptr == vec->cap_ptr)
+	{
+		index_t cap = vec->cap_ptr - vec->dat_ptr;
+		index_t new_cap = 2 * cap;
+		T *new_dat_ptr = malloc(new_cap * sizeof(T));
+		T *new_end_ptr = new_dat_ptr + cap + 1;
+		T *new_cap_ptr = new_dat_ptr + new_cap;
+		T *ptr = vec->dat_ptr;
+		T *nptr = new_dat_ptr;
+		while (ptr != vec->end_ptr)
+		{
+			memcpy(nptr, ptr, sizeof(T)); // change to move
+			ptr++;
+			nptr++;
+		}
+		free(vec->dat_ptr);
+		construct_at(nptr);
+		vec->dat_ptr = new_dat_ptr;
+		vec->end_ptr = new_end_ptr;
+		vec->cap_ptr = new_cap_ptr;
+		return;
+	}
+	construct_at(vec->end_ptr);
+	vec->end_ptr++;
+}
+
 static void c2(T,_vector_emplace) (vector_t *vec, index_t at, elem_constructor constr)
 {
 	if (vec->end_ptr == vec->cap_ptr)
@@ -650,22 +682,62 @@ static void c2(T,_vector_emplace_n) (vector_t *vec, index_t at, elem_constructor
 	}
 }
 
-static void c2(T,_vector_erase_obj) (vector_t *vec, index_t at)
+static void c2(T,_vector_pop_back_obj) (vector_t *vec, elem_destructor destruct_at)
+{
+	vec->end_ptr--;
+	destruct_at(vec->end_ptr);
+}
+
+static void c2(T,_vector_pop_back_n_obj) (vector_t *vec, elem_destructor destruct_at, index_t n)
+{
+	T *ptr = vec->end_ptr;
+	vec->end_ptr -= n;
+	while (ptr != vec->end_ptr)
+	{
+		ptr--;
+		destruct_at(ptr);
+	}
+}
+
+static void c2(T,_vector_erase_obj) (vector_t *vec, elem_destructor destruct_at, index_t at)
 {
 	T *ptr = vec->dat_ptr + at;
+	destruct_at(ptr);
 	vec->end_ptr--;
 	while (ptr != vec->end_ptr)
 	{
-		(*ptr) = *(ptr + 1);
+		memcpy(ptr, ptr + 1, sizeof(T));
 		ptr++;
 	}
+	vec->end_ptr--;
+}
+
+static void c2(T,_vector_erase_n_obj) (vector_t *vec, elem_destructor destruct_at, index_t at, index_t n)
+{
+	T *ptr = vec->dat_ptr + at;
+	T *eptr = ptr + n;
+	while (eptr != vec->end_ptr)
+	{
+		memcpy(ptr, eptr, sizeof(T)); // move assign
+		ptr++;
+		eptr++;
+	}
+	while (ptr != vec->end_ptr)
+	{
+		destruct_at(ptr);
+		ptr++;
+	}
+	vec->end_ptr -= n;
 }
 
 // TODO: object inserters / erasers, resizers, functions woth constructors / destructors
 // also, rewrite object functions to use move/copy functions
+// ALSO: check of erase_n functions move elements correctly (iterate until right pointer hits end)
 
 #undef elem_constructor
-#undef elem_move
-#undef elem_copy
+#undef elem_move_a
+#undef elem_copy_a
+#undef elem_move_c
+#undef elem_copy_c
 #undef elem_destructor
 
