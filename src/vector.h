@@ -651,7 +651,7 @@ static void c2(T,_vector_emplace_n) (vector_t *vec, index_t at, elem_constructor
 			ptr++;
 			nptr++;
 		}
-		for (int i = 0; i < n; i++)
+		for (index_t i = 0; i < n; i++)
 		{
 			constr(nptr);
 			nptr++;
@@ -728,6 +728,38 @@ static void c2(T,_vector_erase_n_obj) (vector_t *vec, elem_destructor destruct_a
 		ptr++;
 	}
 	vec->end_ptr -= n;
+}
+
+static void c2(T,_vector_reserve) (vector_t *vec, index_t n)
+{
+	if (vec->cap_ptr - vec->end_ptr < n)
+	{
+		index_t cap = vec->cap_ptr - vec->dat_ptr;
+		index_t siz = vec->end_ptr - vec->dat_ptr;
+		index_t new_cap = 2 * cap;
+		index_t new_siz = siz + n;
+		while (new_cap < new_siz)
+		{
+			new_cap *= 2;
+		}
+		T *new_dat_ptr = malloc(new_cap * sizeof(T));
+		T *new_end_ptr = new_dat_ptr + new_siz;
+		T *new_cap_ptr = new_dat_ptr + new_cap;
+		T *ptr = vec->dat_ptr;
+		T *nptr = new_dat_ptr;
+		while (ptr != vec->end_ptr)
+		{
+			memcpu(nptr, ptr, sizeof(T));
+			ptr++;
+			nptr++;
+		}
+		free(vec->dat_ptr);
+		vec->dat_ptr = new_dat_ptr;
+		vec->end_ptr = new_end_ptr;
+		vec->cap_ptr = new_cap_ptr;
+		return;
+	}
+	vec->end_ptr += n;
 }
 
 // TODO: object inserters / erasers, resizers, functions woth constructors / destructors
