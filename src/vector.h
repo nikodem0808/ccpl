@@ -550,10 +550,11 @@ static void c2(T,_vector_erase) (vector_t *vec, index_t at)
 static void c2(T,_vector_erase_n) (vector_t *vec, index_t at, index_t n)
 {
 	T *ptr = vec->dat_ptr + at;
+	T *nptr = ptr + n;
 	vec->end_ptr -= n;
 	while (ptr != vec->end_ptr)
 	{
-		(*ptr) = *(ptr + n);
+		memcpy(ptr, nptr, sizeof(T));
 		ptr++;
 	}
 }
@@ -762,7 +763,7 @@ static void c2(T,_vector_reserve) (vector_t *vec, index_t n)
 	vec->end_ptr += n;
 }
 
-// TODO: object inserters / erasers, resizers, functions woth constructors / destructors
+// TODO: object inserters / erasers, resizers, functions with constructors / destructors
 // also, rewrite object functions to use move/copy functions
 // ALSO: check of erase_n functions move elements correctly (iterate until right pointer hits end)
 
